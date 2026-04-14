@@ -1,0 +1,13 @@
+<h2>Login - SGMRI</h2>
+
+<form (ngSubmit)="login()">
+  <label>Email:</label><br>
+  <input type="email" [(ngModel)]="email" name="email" required><br><br>
+
+  <label>Password:</label><br>
+  <input type="password" [(ngModel)]="password" name="password" required><br><br>
+
+  <p *ngIf="errorMessage" style="color: red;">{{ errorMessage }}</p>
+
+  <button type="submit">Ingresar</button>
+</form>
