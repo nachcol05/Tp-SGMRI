@@ -1,0 +1,418 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; padding: 1rem 0 1.25rem; }
+.nav button { font-size: 12px; padding: 6px 14px; border-radius: 999px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+.nav button.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+.screen { display: none; }
+.screen.visible { display: block; }
+.phone { width: 280px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 28px; overflow: hidden; margin: 0 auto; }
+.phone-status { background: #1a1a1a; height: 28px; display: flex; align-items: center; justify-content: center; }
+.phone-dot { width: 10px; height: 10px; background: #333; border-radius: 50%; }
+.phone-body { padding: 0; min-height: 520px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.topbar-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.topbar-icon { width: 30px; height: 30px; border-radius: 50%; background: var(--color-background-secondary); display: flex; align-items: center; justify-content: center; border: 0.5px solid var(--color-border-tertiary); }
+.field { margin: 0 16px 14px; }
+.field label { font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.field input, .field select, .field textarea { width: 100%; font-size: 13px; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-primary); appearance: none; resize: none; }
+.field textarea { height: 60px; }
+.btn-primary { display: block; width: calc(100% - 32px); margin: 8px 16px; padding: 10px; background: #1D9E75; color: #fff; border: none; border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; cursor: pointer; text-align: center; }
+.btn-secondary { display: block; width: calc(100% - 32px); margin: 8px 16px; padding: 10px; background: transparent; color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 13px; cursor: pointer; text-align: center; }
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 8px 16px; }
+.badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 500; }
+.badge-pendiente { background: #FAEEDA; color: #854F0B; }
+.badge-en-curso { background: #E6F1FB; color: #185FA5; }
+.badge-resuelto { background: #EAF3DE; color: #3B6D11; }
+.bottom-nav { display: flex; border-top: 0.5px solid var(--color-border-tertiary); }
+.bottom-nav-item { flex: 1; padding: 10px 4px 6px; text-align: center; font-size: 10px; color: var(--color-text-secondary); cursor: pointer; }
+.bottom-nav-item.active { color: #1D9E75; }
+.nav-icon { width: 18px; height: 18px; margin: 0 auto 3px; border-radius: 4px; background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); }
+.nav-icon.active-icon { background: #E1F5EE; border-color: #1D9E75; }
+.incident-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.incident-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.incident-info { flex: 1; min-width: 0; }
+.incident-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.incident-sub { font-size: 11px; color: var(--color-text-secondary); }
+.map-wrap { margin: 12px 16px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden; background: var(--color-background-secondary); }
+.map-legend { display: flex; gap: 8px; flex-wrap: wrap; padding: 6px 16px 10px; }
+.legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--color-text-secondary); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.section-header { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); padding: 10px 16px 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.detail-label { font-size: 12px; color: var(--color-text-secondary); }
+.detail-value { font-size: 12px; color: var(--color-text-primary); font-weight: 500; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: #E1F5EE; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #0F6E56; flex-shrink: 0; }
+.layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.desc-panel { padding: 0; }
+.desc-panel h3 { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; }
+.desc-panel p { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 12px; }
+.flow-step { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+.flow-num { width: 20px; height: 20px; border-radius: 50%; background: #E1F5EE; color: #0F6E56; font-size: 10px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.flow-text { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+.stars { display: flex; gap: 3px; padding: 8px 16px; }
+.star { font-size: 20px; color: #D3D1C7; }
+.star.filled { color: #EF9F27; }
+.notif-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.notif-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.admin-stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; text-align: center; }
+.admin-stat-num { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.admin-stat-label { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.tab-bar { display: flex; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.tab { flex: 1; padding: 8px 4px; font-size: 11px; text-align: center; color: var(--color-text-secondary); cursor: pointer; }
+.tab.active { color: #1D9E75; border-bottom: 2px solid #1D9E75; }
+</style>
+
+<h2 class="sr-only">Wireframes interactivos del sistema SGMRI: 6 pantallas de la aplicación móvil</h2>
+
+<div class="nav" id="nav"></div>
+<div id="screens"></div>
+
+<script>
+const screens = [
+  {
+    id: 'login',
+    label: 'Login / Register',
+    desc: 'Punto de entrada único. El sistema detecta el rol del usuario (alumno, docente, mantenimiento, administración) y redirige al dashboard correspondiente.',
+    flow: [
+      'Usuario ingresa email institucional y contraseña',
+      'El sistema valida credenciales contra la BD',
+      'Se carga el dashboard según el rol asignado',
+      'Opción de recuperar contraseña por email'
+    ],
+    html: `
+      <div class="phone">
+        <div class="phone-status"><div class="phone-dot"></div></div>
+        <div class="phone-body">
+          <div style="padding: 28px 16px 16px; text-align: center;">
+            <div style="width: 52px; height: 52px; background: #E1F5EE; border-radius: 14px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;">
+              <div style="width: 28px; height: 28px; border: 2.5px solid #1D9E75; border-radius: 4px; position: relative;">
+                <div style="width: 10px; height: 10px; background: #1D9E75; border-radius: 50%; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);"></div>
+              </div>
+            </div>
+            <p style="font-size: 17px; font-weight: 500; color: var(--color-text-primary);">SGMRI</p>
+            <p style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">Instituto Tecnológico Beltrán</p>
+          </div>
+          <div class="field"><label>Email institucional</label><input type="text" value="nacho@itbeltran.edu.ar" /></div>
+          <div class="field"><label>Contraseña</label><input type="password" value="••••••••" /></div>
+          <div class="btn-primary">Ingresar</div>
+          <p style="text-align: center; font-size: 11px; color: var(--color-text-secondary); padding: 8px 0;">¿Olvidaste tu contraseña?</p>
+          <div class="divider"></div>
+          <p style="text-align: center; font-size: 11px; color: var(--color-text-secondary); padding: 8px 0;">¿No tenés cuenta? <span style="color: #1D9E75; font-weight: 500;">Registrarse</span></p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    desc: 'Vista principal del alumno o docente. Muestra incidentes activos cercanos, acceso rápido al reporte y notificaciones recientes.',
+    flow: [
+      'Se muestra un resumen de incidentes activos por zona',
+      'Acceso rápido al mapa interactivo del instituto',
+      'Botón flotante para reportar un nuevo incidente',
+      'Feed de actualizaciones de incidentes propios'
+    ],
+    html: `
+      <div class="phone">
+        <div class="phone-status"><div class="phone-dot"></div></div>
+        <div class="phone-body">
+          <div class="topbar">
+            <div>
+              <p style="font-size: 12px; color: var(--color-text-secondary);">Bienvenido</p>
+              <p class="topbar-title">Nacho</p>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <div style="width: 8px; height: 8px; background: #D85A30; border-radius: 50%;"></div>
+              <div class="topbar-icon"><div style="width: 14px; height: 14px; border: 1.5px solid var(--color-text-secondary); border-radius: 3px;"></div></div>
+            </div>
+          </div>
+          <div style="padding: 12px 16px 4px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="admin-stat"><div class="admin-stat-num" style="color: #D85A30;">3</div><div class="admin-stat-label">Pendientes</div></div>
+              <div class="admin-stat"><div class="admin-stat-num" style="color: #185FA5;">5</div><div class="admin-stat-label">En curso</div></div>
+            </div>
+          </div>
+          <div class="section-header">Incidentes recientes</div>
+          <div class="incident-row"><div class="incident-dot" style="background: #D85A30;"></div><div class="incident-info"><div class="incident-title">Baño piso 2 – falta de agua</div><div class="incident-sub">Hace 2 horas · Zona B</div></div><span class="badge badge-pendiente">Pendiente</span></div>
+          <div class="incident-row"><div class="incident-dot" style="background: #378ADD;"></div><div class="incident-info"><div class="incident-title">Aula 14 – proyector roto</div><div class="incident-sub">Ayer · Zona A</div></div><span class="badge badge-en-curso">En curso</span></div>
+          <div class="incident-row"><div class="incident-dot" style="background: #639922;"></div><div class="incident-info"><div class="incident-title">Cafetería – luz fundida</div><div class="incident-sub">Hace 3 días · Zona C</div></div><span class="badge badge-resuelto">Resuelto</span></div>
+          <div style="margin: 14px 16px 0;">
+            <div style="background: #1D9E75; border-radius: var(--border-radius-md); padding: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <div style="width: 28px; height: 28px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><div style="width: 12px; height: 12px; border: 2px solid #fff; border-radius: 50%; position: relative;"><div style="position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 5px solid #fff;"></div></div></div>
+              <p style="font-size: 13px; font-weight: 500; color: #fff;">Reportar nuevo incidente</p>
+            </div>
+          </div>
+          <div class="bottom-nav" style="margin-top: 14px;">
+            <div class="bottom-nav-item active"><div class="nav-icon active-icon"></div>Inicio</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Mapa</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Mis reportes</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Perfil</div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'reporte',
+    label: 'Reporte de incidente',
+    desc: 'Formulario guiado para que alumnos y docentes reporten problemas. Categorización por tipo, zona y descripción libre.',
+    flow: [
+      'Usuario selecciona la zona afectada del instituto',
+      'Elige la categoría del problema (instalación, servicio, limpieza, seguridad)',
+      'Agrega descripción y opcionalmente una foto',
+      'El sistema envía notificación automática a mantenimiento y administración'
+    ],
+    html: `
+      <div class="phone">
+        <div class="phone-status"><div class="phone-dot"></div></div>
+        <div class="phone-body">
+          <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 20px; height: 20px; border-left: 2px solid var(--color-text-secondary); border-bottom: 2px solid var(--color-text-secondary); transform: rotate(45deg) scale(0.6);"></div>
+              <span class="topbar-title">Nuevo incidente</span>
+            </div>
+          </div>
+          <div style="height: 4px; background: var(--color-background-secondary); margin: 0 16px 14px; border-radius: 2px; overflow: hidden;"><div style="width: 66%; height: 100%; background: #1D9E75; border-radius: 2px;"></div></div>
+          <div class="field"><label>Zona afectada</label>
+            <select><option>Aula 14 – Piso 1</option><option>Baño – Piso 2</option><option>Cafetería</option><option>Corredor principal</option></select>
+          </div>
+          <div class="field"><label>Tipo de problema</label>
+            <select><option>Instalaciones</option><option>Servicios (agua, gas, luz)</option><option>Limpieza</option><option>Seguridad</option></select>
+          </div>
+          <div class="field"><label>Descripción</label>
+            <textarea>Falta agua caliente en el baño del piso 2 desde esta mañana.</textarea>
+          </div>
+          <div class="field"><label>Prioridad</label>
+            <select><option>Baja</option><option selected>Media</option><option>Alta</option><option>Urgente</option></select>
+          </div>
+          <div style="margin: 0 16px 14px; padding: 10px; border: 0.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-md); text-align: center; cursor: pointer;">
+            <p style="font-size: 12px; color: var(--color-text-secondary);">Adjuntar foto (opcional)</p>
+            <p style="font-size: 11px; color: var(--color-text-secondary); margin-top: 2px;">Tocá para seleccionar</p>
+          </div>
+          <div class="btn-primary">Enviar reporte</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'mapa',
+    label: 'Mapa interactivo',
+    desc: 'Vista del instituto con indicadores de estado por zona. Los usuarios pueden ver dónde hay incidentes activos y reportar desde el mapa.',
+    flow: [
+      'Mapa dibujado del instituto con zonas clicables (aulas, baños, cafetería, etc.)',
+      'Cada zona tiene un color según su estado: verde = ok, amarillo = en curso, rojo = crítico',
+      'Al tocar una zona se muestra un popup con los incidentes activos',
+      'Botón rápido para reportar incidente en esa zona'
+    ],
+    html: `
+      <div class="phone">
+        <div class="phone-status"><div class="phone-dot"></div></div>
+        <div class="phone-body">
+          <div class="topbar">
+            <span class="topbar-title">Mapa del instituto</span>
+            <div class="topbar-icon" style="font-size: 11px; color: var(--color-text-secondary);">Hoy</div>
+          </div>
+          <div class="map-wrap">
+            <svg viewBox="0 0 248 200" xmlns="http://www.w3.org/2000/svg" style="display: block; width: 100%;">
+              <rect x="0" y="0" width="248" height="200" fill="#F1EFE8"/>
+              <rect x="8" y="8" width="232" height="184" rx="4" fill="#D3D1C7" fill-opacity="0.3"/>
+              <rect x="16" y="16" width="60" height="44" rx="3" fill="#EAF3DE" stroke="#639922" stroke-width="1"/>
+              <text x="46" y="32" text-anchor="middle" font-size="8" fill="#3B6D11" font-weight="500">Aula 11</text>
+              <text x="46" y="43" text-anchor="middle" font-size="7" fill="#639922">OK</text>
+              <rect x="84" y="16" width="60" height="44" rx="3" fill="#EAF3DE" stroke="#639922" stroke-width="1"/>
+              <text x="114" y="32" text-anchor="middle" font-size="8" fill="#3B6D11" font-weight="500">Aula 12</text>
+              <text x="114" y="43" text-anchor="middle" font-size="7" fill="#639922">OK</text>
+              <rect x="152" y="16" width="60" height="44" rx="3" fill="#E6F1FB" stroke="#378ADD" stroke-width="1.5"/>
+              <text x="182" y="32" text-anchor="middle" font-size="8" fill="#185FA5" font-weight="500">Aula 14</text>
+              <text x="182" y="43" text-anchor="middle" font-size="7" fill="#185FA5">En curso</text>
+              <rect x="16" y="70" width="60" height="44" rx="3" fill="#FCEBEB" stroke="#E24B4A" stroke-width="1.5"/>
+              <text x="46" y="86" text-anchor="middle" font-size="8" fill="#A32D2D" font-weight="500">Baño P2</text>
+              <text x="46" y="97" text-anchor="middle" font-size="7" fill="#E24B4A">Crítico</text>
+              <rect x="84" y="70" width="124" height="44" rx="3" fill="#EAF3DE" stroke="#639922" stroke-width="1"/>
+              <text x="146" y="86" text-anchor="middle" font-size="8" fill="#3B6D11" font-weight="500">Corredor principal</text>
+              <text x="146" y="97" text-anchor="middle" font-size="7" fill="#639922">OK</text>
+              <rect x="16" y="124" width="100" height="52" rx="3" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.5"/>
+              <text x="66" y="143" text-anchor="middle" font-size="8" fill="#854F0B" font-weight="500">Cafetería</text>
+              <text x="66" y="154" text-anchor="middle" font-size="7" fill="#BA7517">En curso</text>
+              <rect x="126" y="124" width="110" height="52" rx="3" fill="#EAF3DE" stroke="#639922" stroke-width="1"/>
+              <text x="181" y="143" text-anchor="middle" font-size="8" fill="#3B6D11" font-weight="500">Laboratorio</text>
+              <text x="181" y="154" text-anchor="middle" font-size="7" fill="#639922">OK</text>
+              <circle cx="46" cy="91" r="5" fill="#E24B4A" opacity="0.25"/>
+              <circle cx="46" cy="91" r="2.5" fill="#E24B4A"/>
+            </svg>
+          </div>
+          <div class="map-legend">
+            <div class="legend-item"><div class="legend-dot" style="background: #639922;"></div>Sin incidentes</div>
+            <div class="legend-item"><div class="legend-dot" style="background: #BA7517;"></div>En curso</div>
+            <div class="legend-item"><div class="legend-dot" style="background: #E24B4A;"></div>Crítico</div>
+            <div class="legend-item"><div class="legend-dot" style="background: #378ADD;"></div>Pendiente</div>
+          </div>
+          <div style="margin: 0 16px; padding: 10px 12px; background: #FCEBEB; border-radius: var(--border-radius-md); border-left: 3px solid #E24B4A;">
+            <p style="font-size: 12px; font-weight: 500; color: #A32D2D;">Baño Piso 2 – incidente activo</p>
+            <p style="font-size: 11px; color: #A32D2D; margin-top: 2px;">Falta de agua · Reportado hace 2h</p>
+          </div>
+          <div class="bottom-nav" style="margin-top: 12px;">
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Inicio</div>
+            <div class="bottom-nav-item active"><div class="nav-icon active-icon"></div>Mapa</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Mis reportes</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Perfil</div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'mantenimiento',
+    label: 'Panel mantenimiento',
+    desc: 'Vista del personal de mantenimiento. Muestra la cola de incidentes asignados y permite actualizar el estado de cada uno.',
+    flow: [
+      'Lista priorizada de incidentes asignados al operario',
+      'Filtro por zona, tipo y prioridad',
+      'Al abrir un incidente puede cambiar el estado: pendiente → en curso → resuelto',
+      'El cambio de estado genera notificación automática al reportante'
+    ],
+    html: `
+      <div class="phone">
+        <div class="phone-status"><div class="phone-dot"></div></div>
+        <div class="phone-body">
+          <div class="topbar">
+            <span class="topbar-title">Mis asignaciones</span>
+            <div style="font-size: 11px; color: #1D9E75; font-weight: 500;">4 activos</div>
+          </div>
+          <div class="tab-bar">
+            <div class="tab active">Pendientes (2)</div>
+            <div class="tab">En curso (2)</div>
+            <div class="tab">Resueltos</div>
+          </div>
+          <div class="incident-row" style="background: #FFF8F0;">
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 12px; font-weight: 500; color: var(--color-text-primary);">Baño Piso 2 – agua</span>
+                <span class="badge" style="background: #FCEBEB; color: #A32D2D; font-size: 9px;">Urgente</span>
+              </div>
+              <span style="font-size: 11px; color: var(--color-text-secondary);">Reportado hace 2h · Zona B</span>
+              <div style="display: flex; gap: 6px; margin-top: 4px;">
+                <div style="flex: 1; padding: 5px 0; background: #E6F1FB; border-radius: var(--border-radius-md); text-align: center; font-size: 10px; color: #185FA5; font-weight: 500; cursor: pointer;">Iniciar</div>
+                <div style="flex: 1; padding: 5px 0; background: var(--color-background-secondary); border-radius: var(--border-radius-md); text-align: center; font-size: 10px; color: var(--color-text-secondary); cursor: pointer;">Detalle</div>
+              </div>
+            </div>
+          </div>
+          <div class="incident-row">
+            <div style="display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 12px; font-weight: 500; color: var(--color-text-primary);">Cafetería – luz fundida</span>
+                <span class="badge badge-pendiente" style="font-size: 9px;">Media</span>
+              </div>
+              <span style="font-size: 11px; color: var(--color-text-secondary);">Reportado hace 1 día · Zona C</span>
+              <div style="display: flex; gap: 6px; margin-top: 4px;">
+                <div style="flex: 1; padding: 5px 0; background: #E6F1FB; border-radius: var(--border-radius-md); text-align: center; font-size: 10px; color: #185FA5; font-weight: 500; cursor: pointer;">Iniciar</div>
+                <div style="flex: 1; padding: 5px 0; background: var(--color-background-secondary); border-radius: var(--border-radius-md); text-align: center; font-size: 10px; color: var(--color-text-secondary); cursor: pointer;">Detalle</div>
+              </div>
+            </div>
+          </div>
+          <div class="section-header" style="margin-top: 4px;">Cambio de estado rápido</div>
+          <div style="margin: 0 16px 14px; padding: 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md);">
+            <p style="font-size: 11px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 8px;">Aula 14 – proyector</p>
+            <div style="display: flex; gap: 4px;">
+              <div style="flex: 1; padding: 5px 0; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); text-align: center; font-size: 10px; color: var(--color-text-secondary);">Pendiente</div>
+              <div style="flex: 1; padding: 5px 0; background: #E6F1FB; border: 0.5px solid #378ADD; border-radius: var(--border-radius-md); text-align: center; font-size: 10px; color: #185FA5; font-weight: 500;">En curso</div>
+              <div style="flex: 1; padding: 5px 0; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); text-align: center; font-size: 10px; color: var(--color-text-secondary);">Resuelto</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="bottom-nav-item active"><div class="nav-icon active-icon"></div>Tareas</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Historial</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Zonas</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Perfil</div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 'admin',
+    label: 'Panel administración',
+    desc: 'Vista del personal administrativo. Resumen ejecutivo de incidentes, historial completo y gestión de contacto con proveedores externos.',
+    flow: [
+      'Dashboard con métricas: totales por estado, por zona y por tipo de servicio',
+      'Historial filtrable de todos los incidentes del instituto',
+      'Acceso a datos de contacto de proveedores (gas, agua, electricidad)',
+      'Puede generar reportes de actividad del período'
+    ],
+    html: `
+      <div class="phone">
+        <div class="phone-status"><div class="phone-dot"></div></div>
+        <div class="phone-body">
+          <div class="topbar">
+            <span class="topbar-title">Administración</span>
+            <div style="font-size: 11px; color: var(--color-text-secondary);">Abril 2026</div>
+          </div>
+          <div style="padding: 10px 16px 4px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 7px;">
+              <div class="admin-stat"><div class="admin-stat-num">18</div><div class="admin-stat-label">Total incidentes</div></div>
+              <div class="admin-stat"><div class="admin-stat-num" style="color: #D85A30;">3</div><div class="admin-stat-label">Sin atender</div></div>
+              <div class="admin-stat"><div class="admin-stat-num" style="color: #185FA5;">5</div><div class="admin-stat-label">En curso</div></div>
+              <div class="admin-stat"><div class="admin-stat-num" style="color: #3B6D11;">10</div><div class="admin-stat-label">Resueltos</div></div>
+            </div>
+          </div>
+          <div class="section-header" style="margin-top: 6px;">Servicios externos</div>
+          <div class="detail-row"><div class="detail-label">Agua / Cloacas</div><div style="font-size: 11px; color: #1D9E75; font-weight: 500;">Contactar</div></div>
+          <div class="detail-row"><div class="detail-label">Gas</div><div style="font-size: 11px; color: #1D9E75; font-weight: 500;">Contactar</div></div>
+          <div class="detail-row"><div class="detail-label">Electricidad</div><div style="font-size: 11px; color: #1D9E75; font-weight: 500;">Contactar</div></div>
+          <div class="detail-row"><div class="detail-label">Internet / Red</div><div style="font-size: 11px; color: #1D9E75; font-weight: 500;">Contactar</div></div>
+          <div class="section-header" style="margin-top: 4px;">Últimos incidentes</div>
+          <div class="incident-row"><div class="incident-dot" style="background: #D85A30;"></div><div class="incident-info"><div class="incident-title">Baño Piso 2 – falta de agua</div><div class="incident-sub">Zona B · Hace 2h · Sin atender</div></div></div>
+          <div class="incident-row"><div class="incident-dot" style="background: #378ADD;"></div><div class="incident-info"><div class="incident-title">Aula 14 – proyector</div><div class="incident-sub">Zona A · Ayer · En curso</div></div></div>
+          <div style="margin: 10px 16px 6px; padding: 8px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+            <p style="font-size: 12px; color: var(--color-text-primary);">Generar reporte mensual</p>
+            <p style="font-size: 11px; color: #1D9E75; font-weight: 500;">Exportar</p>
+          </div>
+          <div class="bottom-nav">
+            <div class="bottom-nav-item active"><div class="nav-icon active-icon"></div>Resumen</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Historial</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Servicios</div>
+            <div class="bottom-nav-item"><div class="nav-icon"></div>Config</div>
+          </div>
+        </div>
+      </div>
+    `
+  }
+];
+
+const navEl = document.getElementById('nav');
+const screensEl = document.getElementById('screens');
+
+screens.forEach((s, i) => {
+  const btn = document.createElement('button');
+  btn.textContent = s.label;
+  btn.className = i === 0 ? 'active' : '';
+  btn.onclick = () => {
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.screen').forEach(sc => sc.classList.remove('visible'));
+    document.getElementById('screen-' + s.id).classList.add('visible');
+  };
+  navEl.appendChild(btn);
+
+  const stepsHtml = s.flow.map((f, j) =>
+    `<div class="flow-step"><div class="flow-num">${j+1}</div><div class="flow-text">${f}</div></div>`
+  ).join('');
+
+  const div = document.createElement('div');
+  div.className = 'screen' + (i === 0 ? ' visible' : '');
+  div.id = 'screen-' + s.id;
+  div.innerHTML = `
+    <div class="layout">
+      <div>${s.html}</div>
+      <div class="desc-panel">
+        <h3>${s.label}</h3>
+        <p>${s.desc}</p>
+        <div>${stepsHtml}</div>
+      </div>
+    </div>
+  `;
+  screensEl.appendChild(div);
+});
+</script>
